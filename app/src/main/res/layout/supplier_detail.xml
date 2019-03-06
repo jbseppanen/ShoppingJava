@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:text="Description"
+        android:text="Phone #"
         android:textAlignment="center"
         android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/product_description"
+        android:id="@+id/supplier_phone"
         style="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,62 +31,35 @@
         app:layout_constraintTop_toBottomOf="@id/label_supplier_phone" />
 
     <TextView
-        android:id="@+id/label_product_price"
+        android:id="@+id/label_supplier_address"
         style="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:text="Price:"
+        android:text="Address"
         android:textAlignment="center"
         android:textIsSelectable="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/product_description" />
+        app:layout_constraintTop_toBottomOf="@id/supplier_phone" />
 
     <TextView
-        android:id="@+id/product_price"
+        android:id="@+id/supplier_address"
         style="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:textAlignment="center"
         android:textIsSelectable="true"
-        app:layout_constraintStart_toEndOf="@id/label_product_price"
-        app:layout_constraintTop_toBottomOf="@id/product_description" />
-
-    <TextView
-        android:id="@+id/label_product_qty"
-        style="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="Qty in stock:"
-        android:textAlignment="center"
-        android:textIsSelectable="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/product_price" />
+        app:layout_constraintTop_toBottomOf="@id/label_supplier_address" />
 
 
     <TextView
-        android:id="@+id/product_qty"
+        android:id="@+id/supplier_citystatezip"
         style="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:textAlignment="center"
         android:textIsSelectable="true"
-        app:layout_constraintStart_toEndOf="@id/label_product_qty"
-        app:layout_constraintTop_toBottomOf="@id/product_price" />
-
-    <ImageView
-        android:id="@+id/image_large"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:src="@color/colorPrimaryDark"
-        android:transitionName="shared_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/product_qty" />
+        app:layout_constraintTop_toBottomOf="@id/supplier_address" />
 
 </android.support.constraint.ConstraintLayout>

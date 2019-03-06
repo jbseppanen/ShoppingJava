@@ -1,14 +1,11 @@
-package com.jbseppanen.shoppingjava.product;
+package com.jbseppanen.shoppingjava.supplier;
 
-import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,7 +16,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jbseppanen.shoppingjava.DataDao;
@@ -35,18 +31,18 @@ import static org.apache.commons.text.WordUtils.capitalizeFully;
  * An activity representing a list of Contacts. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link ProductDetailActivity} representing
+ * lead to a {@link SupplierDetailActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class ProductListActivity extends AppCompatActivity {
+public class SupplierListActivity extends AppCompatActivity {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane;
-    public static ArrayList<Product> productList;
+    public static ArrayList<Supplier> supplierList;
     static Context context;
     SimpleItemRecyclerViewAdapter listAdapter;
 
@@ -63,7 +59,7 @@ public class ProductListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-        final Fade transition = new  Fade();
+        final Fade transition = new Fade();
         transition.setStartDelay(250);
         transition.setDuration(500);
         getWindow().setEnterTransition(transition);
@@ -71,7 +67,7 @@ public class ProductListActivity extends AppCompatActivity {
         supportPostponeEnterTransition();
 
 
-        setContentView(R.layout.activity_product_list);
+        setContentView(R.layout.activity_supplier_list);
 
         context = this;
 
@@ -88,7 +84,7 @@ public class ProductListActivity extends AppCompatActivity {
             }
         });
 
-        if (findViewById(R.id.product_detail_container) != null) {
+        if (findViewById(R.id.supplier_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
             // If this view is present, then the
@@ -96,14 +92,14 @@ public class ProductListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        final View recyclerView = findViewById(R.id.product_list);
+        final View recyclerView = findViewById(R.id.supplier_list);
         assert recyclerView != null;
 
         AtomicBoolean canceled = new AtomicBoolean(false);
-        DataDao.getAllProducts(canceled, new DataDao.ObjectCallback<ArrayList<Product>>() {
+        DataDao.getAllSuppliers(canceled, new DataDao.ObjectCallback<ArrayList<Supplier>>() {
             @Override
-            public void returnObjects(ArrayList<Product> products) {
-                productList = products;
+            public void returnObjects(ArrayList<Supplier> suppliers) {
+                supplierList = suppliers;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -119,20 +115,20 @@ public class ProductListActivity extends AppCompatActivity {
 
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        listAdapter = new SimpleItemRecyclerViewAdapter(this, productList, mTwoPane);
+        listAdapter = new SimpleItemRecyclerViewAdapter(this, supplierList, mTwoPane);
         recyclerView.setAdapter(listAdapter);
     }
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final ProductListActivity mParentActivity;
-        private final ArrayList<Product> mValues;
+        private final SupplierListActivity mParentActivity;
+        private final ArrayList<Supplier> mValues;
         private final boolean mTwoPane;
 
 
-        SimpleItemRecyclerViewAdapter(ProductListActivity parent,
-                                      ArrayList<Product> items,
+        SimpleItemRecyclerViewAdapter(SupplierListActivity parent,
+                                      ArrayList<Supplier> items,
                                       boolean twoPane) {
             mValues = items;
             mParentActivity = parent;
@@ -142,7 +138,7 @@ public class ProductListActivity extends AppCompatActivity {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.product_list_content, parent, false);
+                    .inflate(R.layout.supplier_list_content, parent, false);
             boolean test = false;
             return new ViewHolder(view);
         }
@@ -151,34 +147,27 @@ public class ProductListActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
             holder.status.set(false);
 
-            int imageId = context.getResources().getIdentifier(mValues.get(position).getProductname(), "drawable", context.getPackageName());
-            if (imageId != 0) {
-                holder.mImageView.setImageResource(imageId);
-            }
-
-            String vanityName = capitalizeFully(mValues.get(position).productname.replace("_"," "));
+            String vanityName = capitalizeFully(mValues.get(position).suppliername.replace("_", " "));
             holder.mNameView.setText(vanityName);
-            holder.mIdView.setText(String.valueOf(mValues.get(position).productid));
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    Product product = (Product) v.getTag();
+                    Supplier supplier = (Supplier) v.getTag();
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putInt(ProductDetailFragment.ARG_ITEM_ID, product.productid-1);
-                        ProductDetailFragment fragment = new ProductDetailFragment();
+                        arguments.putInt(SupplierDetailFragment.ARG_ITEM_ID, supplier.supplierid - 1);
+                        SupplierDetailFragment fragment = new SupplierDetailFragment();
                         fragment.setArguments(arguments);
                         mParentActivity.getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.product_detail_container, fragment)
+                                .replace(R.id.supplier_detail_container, fragment)
                                 .commit();
                     } else {
                         Context context = v.getContext();
-                        Intent intent = new Intent(context, ProductDetailActivity.class);
-                        intent.putExtra(ProductDetailFragment.ARG_ITEM_ID, product.productid-1);
-                        final ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation((Activity) context, holder.mImageView, ViewCompat.getTransitionName(holder.mImageView));
-                        context.startActivity(intent, activityOptions.toBundle());
+                        Intent intent = new Intent(context, SupplierDetailActivity.class);
+                        intent.putExtra(SupplierDetailFragment.ARG_ITEM_ID, supplier.supplierid - 1);
+                        context.startActivity(intent);
                     }
 
                 }
@@ -206,16 +195,12 @@ public class ProductListActivity extends AppCompatActivity {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            final TextView mIdView;
             final TextView mNameView;
-            final ImageView mImageView;
             final AtomicBoolean status;
 
             ViewHolder(View view) {
                 super(view);
-                mIdView = view.findViewById(R.id.id_text);
                 mNameView = view.findViewById(R.id.name);
-                mImageView = view.findViewById(R.id.image);
                 status = new AtomicBoolean(false);
             }
         }
