@@ -4,15 +4,15 @@ import android.content.Context;
 
 import java.io.File;
 
-class PublicFunctions {
+public class PublicFunctions {
 
-    static String getSearchText(String inputString) {
+    public static String getSearchText(String inputString) {
         String outputString = inputString.substring(inputString.indexOf("api/") + 4);
         outputString = outputString.replace('/','-');
         return outputString;
     }
 
-    static File getFileFromCache(String searchText, Context context) {
+   static File getFileFromCache(String searchText, Context context) {
         File file = null;
         File[] items = context.getCacheDir().listFiles();
         for (File item : items) {
@@ -24,7 +24,7 @@ class PublicFunctions {
         return file;
     }
 
-    static void deleteCache(Context context) {
+    public static void deleteCache(Context context) {
         try {
             File dir = context.getCacheDir();
             if (dir != null && dir.isDirectory()) {

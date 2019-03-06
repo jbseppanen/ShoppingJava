@@ -23,15 +23,12 @@ public class NetworkAdapter {
         void returnResult(Boolean success, String result);
     }
 
-    public interface NetworkImageCallback {
-        void returnResult(Bitmap bitmap);
-    }
 
     public static void httpGetRequest(final String urlString, final AtomicBoolean httpCancel, final NetworkCallback callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(httpCancel.get()) {
+                if (httpCancel.get()) {
                     Log.i("GetRequestCanceled", urlString);
                     return;
                 }
@@ -44,7 +41,7 @@ public class NetworkAdapter {
                     URL url = new URL(urlString);
                     connection = (HttpURLConnection) url.openConnection();
 
-                    if(httpCancel.get()) {
+                    if (httpCancel.get()) {
                         Log.i("GetRequestCanceled", urlString);
                         throw new IOException();
                     }
@@ -53,18 +50,18 @@ public class NetworkAdapter {
 
                     int responseCode = connection.getResponseCode();
 
-                    if(httpCancel.get()) {
+                    if (httpCancel.get()) {
                         Log.i("GetRequestCanceled", urlString);
                         throw new IOException();
                     }
 
-                    if(responseCode == HttpURLConnection.HTTP_OK) {
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
                         stream = connection.getInputStream();
-                        if(stream != null) {
+                        if (stream != null) {
                             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
                             StringBuilder builder = new StringBuilder();
                             String line = reader.readLine();
-                            while(line != null){
+                            while (line != null) {
                                 builder.append(line);
                                 line = reader.readLine();
                             }
@@ -79,62 +76,10 @@ public class NetworkAdapter {
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
-                    if(connection != null) {
+                    if (connection != null) {
                         connection.disconnect();
                     }
 
-                    if(stream != null) {
-                        try {
-                            stream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    callback.returnResult(success, result);
-                }
-            }
-        }).start();
-    }
-
-    public static void httpImageRequest(final String urlString, final AtomicBoolean imageCanceled, final NetworkImageCallback callback) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                boolean success = false;
-                Bitmap resultImage = null;
-                InputStream stream = null;
-                HttpURLConnection connection = null;
-                URL url;
-
-                try {
-                    if(imageCanceled.get()) {
-                        Log.i("GetRequestCanceled", urlString);
-                        throw new IOException();
-                    }
-
-                    url = new URL(urlString);
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setReadTimeout(TIMEOUT);
-                    connection.setConnectTimeout(TIMEOUT);
-                    connection.connect();
-                    int responseCode = connection.getResponseCode();
-                    if (responseCode == HttpURLConnection.HTTP_OK) {
-
-                        if(imageCanceled.get()) {
-                            Log.i("GetRequestCanceled", urlString);
-                            throw new IOException();
-                        }
-
-                        stream = connection.getInputStream();
-                        if (stream != null) {
-                            resultImage = BitmapFactory.decodeStream(stream);
-                            success = true;
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
                     if (stream != null) {
                         try {
                             stream.close();
@@ -142,17 +87,9 @@ public class NetworkAdapter {
                             e.printStackTrace();
                         }
                     }
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
+                    callback.returnResult(success, result);
                 }
-                if(imageCanceled.get()) {
-                    Log.i("GetRequestCanceled", urlString);
-                    success = false;
-                }
-                callback.returnResult(resultImage);
             }
         }).start();
     }
-
 }
