@@ -75,7 +75,7 @@ public class SupplierListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab_product_add);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,8 +95,7 @@ public class SupplierListActivity extends AppCompatActivity {
         final View recyclerView = findViewById(R.id.supplier_list);
         assert recyclerView != null;
 
-        AtomicBoolean canceled = new AtomicBoolean(false);
-        DataDao.getAllSuppliers(canceled, new DataDao.ObjectCallback<ArrayList<Supplier>>() {
+        DataDao.getAllSuppliers(new DataDao.ObjectCallback<ArrayList<Supplier>>() {
             @Override
             public void returnObjects(ArrayList<Supplier> suppliers) {
                 supplierList = suppliers;
@@ -105,12 +104,10 @@ public class SupplierListActivity extends AppCompatActivity {
                     public void run() {
                         setupRecyclerView((RecyclerView) recyclerView);
                         supportStartPostponedEnterTransition();
-
                     }
                 });
             }
         });
-
     }
 
 

@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.jbseppanen.shoppingjava.DataDao;
 import com.jbseppanen.shoppingjava.PublicFunctions;
 import com.jbseppanen.shoppingjava.R;
+import com.jbseppanen.shoppingjava.supplier.SupplierDetailActivity;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,6 +50,7 @@ public class ProductListActivity extends AppCompatActivity {
     public static ArrayList<Product> productList;
     static Context context;
     SimpleItemRecyclerViewAdapter listAdapter;
+    private boolean supplierSelection;
 
 
     @Override
@@ -63,7 +65,7 @@ public class ProductListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-        final Fade transition = new  Fade();
+        final Fade transition = new Fade();
         transition.setStartDelay(250);
         transition.setDuration(500);
         getWindow().setEnterTransition(transition);
@@ -73,13 +75,19 @@ public class ProductListActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_product_list);
 
+        if (getIntent().getStringExtra(SupplierDetailActivity.SUPPLIER_PRODUCT_SELECTION_KEY) == null) {
+            supplierSelection = false;
+        } else {
+            supplierSelection = true;
+        }
+
         context = this;
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab_product_add);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,8 +107,7 @@ public class ProductListActivity extends AppCompatActivity {
         final View recyclerView = findViewById(R.id.product_list);
         assert recyclerView != null;
 
-        AtomicBoolean canceled = new AtomicBoolean(false);
-        DataDao.getAllProducts(canceled, new DataDao.ObjectCallback<ArrayList<Product>>() {
+        DataDao.getAllProducts(new DataDao.ObjectCallback<ArrayList<Product>>() {
             @Override
             public void returnObjects(ArrayList<Product> products) {
                 productList = products;
@@ -109,7 +116,6 @@ public class ProductListActivity extends AppCompatActivity {
                     public void run() {
                         setupRecyclerView((RecyclerView) recyclerView);
                         supportStartPostponedEnterTransition();
-
                     }
                 });
             }
@@ -156,7 +162,7 @@ public class ProductListActivity extends AppCompatActivity {
                 holder.mImageView.setImageResource(imageId);
             }
 
-            String vanityName = capitalizeFully(mValues.get(position).productname.replace("_"," "));
+            String vanityName = capitalizeFully(mValues.get(position).productname.replace("_", " "));
             holder.mNameView.setText(vanityName);
             holder.mIdView.setText(String.valueOf(mValues.get(position).productid));
             holder.itemView.setTag(mValues.get(position));
@@ -165,22 +171,28 @@ public class ProductListActivity extends AppCompatActivity {
                 public void onClick(View v) {
 
                     Product product = (Product) v.getTag();
-                    if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putInt(ProductDetailFragment.ARG_ITEM_ID, product.productid-1);
-                        ProductDetailFragment fragment = new ProductDetailFragment();
-                        fragment.setArguments(arguments);
-                        mParentActivity.getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.product_detail_container, fragment)
-                                .commit();
+                    if (supplierSelection) {
+                        Intent intent = new Intent();
+                        intent.putExtra(SupplierDetailActivity.SUPPLIER_PRODUCT_SELECTION_KEY, product.getProductid());
+                        setResult(Activity.RESULT_OK, intent);
+                        finish();
                     } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, ProductDetailActivity.class);
-                        intent.putExtra(ProductDetailFragment.ARG_ITEM_ID, product.productid-1);
-                        final ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation((Activity) context, holder.mImageView, ViewCompat.getTransitionName(holder.mImageView));
-                        context.startActivity(intent, activityOptions.toBundle());
+                        if (mTwoPane) {
+                            Bundle arguments = new Bundle();
+                            arguments.putInt(ProductDetailFragment.ARG_ITEM_ID, product.productid - 1);
+                            ProductDetailFragment fragment = new ProductDetailFragment();
+                            fragment.setArguments(arguments);
+                            mParentActivity.getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.product_detail_container, fragment)
+                                    .commit();
+                        } else {
+                            Context context = v.getContext();
+                            Intent intent = new Intent(context, ProductDetailActivity.class);
+                            intent.putExtra(ProductDetailFragment.ARG_ITEM_ID, product.productid - 1);
+                            final ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation((Activity) context, holder.mImageView, ViewCompat.getTransitionName(holder.mImageView));
+                            context.startActivity(intent, activityOptions.toBundle());
+                        }
                     }
-
                 }
             });
 

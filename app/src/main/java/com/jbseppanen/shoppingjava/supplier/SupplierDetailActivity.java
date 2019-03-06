@@ -1,7 +1,10 @@
 package com.jbseppanen.shoppingjava.supplier;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -9,8 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+import com.jbseppanen.shoppingjava.DataDao;
 import com.jbseppanen.shoppingjava.R;
+import com.jbseppanen.shoppingjava.product.ProductListActivity;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An activity representing a single Supplier detail screen. This
@@ -20,6 +28,11 @@ import com.jbseppanen.shoppingjava.R;
  */
 public class SupplierDetailActivity extends AppCompatActivity {
 
+    public static final String SUPPLIER_PRODUCT_SELECTION_KEY = "SupplierProductSelectionKey";
+    public static final int REQUEST_CODE = 79;
+    Context context;
+    int supplierId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,12 +40,19 @@ public class SupplierDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        context = this;
+        supplierId = getIntent().getIntExtra(SupplierDetailFragment.ARG_ITEM_ID, 0);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_supplier_add_product);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Add product to this supplier", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                Intent intent = new Intent(context, ProductListActivity.class);
+                intent.putExtra(SUPPLIER_PRODUCT_SELECTION_KEY, "SupplierProductSelection");
+                startActivityForResult(intent, REQUEST_CODE);
             }
         });
 
@@ -78,5 +98,24 @@ public class SupplierDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE) {
+                if (data != null) {
+                    int productId = data.getIntExtra(SUPPLIER_PRODUCT_SELECTION_KEY, -1);
+                    DataDao.addProductToSupplier(new DataDao.ObjectCallback<Supplier>() {
+                        @Override
+                        public void returnObjects(Supplier object) {
+                            String message = (object != null) ? "Product added to this supplier" : "Product failed to add to this supplier";
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                        }
+                    }, supplierId, productId);
+                }
+            }
+        }
     }
 }

@@ -1,80 +1,72 @@
 package com.jbseppanen.shoppingjava;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
-
-import com.google.gson.Gson;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkAdapter {
-    private static final int TIMEOUT = 3000;
+    public static final String GET = "GET";
+    public static final String POST = "POST";
+    public static final String PUT = "PUT";
+    public static final String DELETE = "DELETE";
+    public static final int TIMEOUT = 3000;
 
 
     public interface NetworkCallback {
         void returnResult(Boolean success, String result);
     }
 
-
-    public static void httpGetRequest(final String urlString, final AtomicBoolean httpCancel, final NetworkCallback callback) {
+    public static void httpRequest(final String stringUrl, final String requestType, final JSONObject body, final NetworkCallback callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (httpCancel.get()) {
-                    Log.i("GetRequestCanceled", urlString);
-                    return;
-                }
-
                 String result = "";
                 boolean success = false;
-                HttpURLConnection connection = null;
                 InputStream stream = null;
+                HttpURLConnection connection = null;
                 try {
-                    URL url = new URL(urlString);
+                    URL url = new URL(stringUrl);
                     connection = (HttpURLConnection) url.openConnection();
+                    connection.setReadTimeout(TIMEOUT);
+                    connection.setConnectTimeout(TIMEOUT);
+                    connection.setRequestMethod(requestType);
 
-                    if (httpCancel.get()) {
-                        Log.i("GetRequestCanceled", urlString);
-                        throw new IOException();
+                    if (requestType.equals(GET) || requestType.equals(DELETE)) {
+                        connection.connect();
+                    } else if (requestType.equals(POST) || requestType.equals(PUT)) {
+                        if (body != null) {
+                            OutputStream outputStream = connection.getOutputStream();
+                            outputStream.write(body.toString().getBytes());
+                            outputStream.close();
+                        }
                     }
 
-                    connection.connect();
-
-                    int responseCode = connection.getResponseCode();
-
-                    if (httpCancel.get()) {
-                        Log.i("GetRequestCanceled", urlString);
-                        throw new IOException();
-                    }
-
-                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                    if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                         stream = connection.getInputStream();
                         if (stream != null) {
                             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
                             StringBuilder builder = new StringBuilder();
-                            String line = reader.readLine();
-                            while (line != null) {
+                            String line;
+                            while ((line = reader.readLine()) != null) {
                                 builder.append(line);
-                                line = reader.readLine();
                             }
                             result = builder.toString();
-                            success = true;
                         }
-                    } else {
-                        result = String.valueOf(responseCode);
                     }
+
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
+                    result = e.getMessage();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    result = e.getMessage();
                 } finally {
                     if (connection != null) {
                         connection.disconnect();
@@ -87,8 +79,8 @@ public class NetworkAdapter {
                             e.printStackTrace();
                         }
                     }
-                    callback.returnResult(success, result);
                 }
+                callback.returnResult(success, result);
             }
         }).start();
     }
