@@ -1,5 +1,6 @@
 package com.jbseppanen.shoppingjava.product;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,7 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+import com.google.gson.JsonObject;
+import com.jbseppanen.shoppingjava.DataDao;
+import com.jbseppanen.shoppingjava.MainActivity;
 import com.jbseppanen.shoppingjava.R;
 
 /**
@@ -20,6 +25,8 @@ import com.jbseppanen.shoppingjava.R;
  */
 public class ProductDetailActivity extends AppCompatActivity {
 
+    Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,12 +34,27 @@ public class ProductDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_product_add);
+        context = this;
+        final int shopperid = MainActivity.sharedPref.getInt(MainActivity.CURRENT_SHOPPER_ID_KEY,-1);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_product_add_to_cart);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                DataDao.addProductToCart(shopperid, getIntent().getIntExtra(ProductDetailFragment.ARG_ITEM_ID, -1), new DataDao.ObjectCallback<JsonObject>() {
+                    @Override
+                    public void returnObjects(final JsonObject object) {
+                        final String message = (object != null) ? "Product added cart" : "Product failed to add to cart";
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
             }
         });
 

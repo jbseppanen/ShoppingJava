@@ -1,23 +1,20 @@
 package com.jbseppanen.shoppingjava.product;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public class Product {
     int productid;
     String productname;
     String description;
     String thumbImageUrl;
     double price;
-    int qtyinstock;
+    private int productQty;
 
-    public Product(int productid, String productname, String description, String thumbImageUrl, double price, int qtyinstock) {
+    public Product(int productid, String productname, String description, String thumbImageUrl, double price, int productQty) {
         this.productid = productid;
         this.productname = productname;
         this.description = description;
         this.thumbImageUrl = thumbImageUrl;
         this.price = price;
-        this.qtyinstock = qtyinstock;
+        this.productQty = productQty;
     }
 
 /*
@@ -102,11 +99,11 @@ public class Product {
         this.price = price;
     }
 
-    public int getQtyinstock() {
-        return qtyinstock;
+    public int getProductQty() {
+        return productQty;
     }
 
-    public void setQtyinstock(int qtyinstock) {
-        this.qtyinstock = qtyinstock;
+    public void setProductQty(int productQty) {
+        this.productQty = productQty;
     }
 }

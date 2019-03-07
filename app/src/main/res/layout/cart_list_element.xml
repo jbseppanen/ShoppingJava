@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    tools:context=".CartViewActivity">
 
     <ImageView
-        android:id="@+id/image_product_list"
+        android:id="@+id/image_cart_list"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:scaleType="centerCrop"
         android:src="@color/colorPrimaryDark"
-        android:transitionName="shared_image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/text_product_list_name"
+        android:id="@+id/text_cart_list_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
@@ -25,18 +25,27 @@
         android:textAlignment="center"
         android:textAppearance="?attr/textAppearanceListItem"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/image_product_list"
+        app:layout_constraintStart_toEndOf="@id/image_cart_list"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/id_text_product_qty"
+        android:id="@+id/id_text_cart_qty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
         android:text="999"
         android:textAppearance="?attr/textAppearanceListItem"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/text_product_list_name"
+        app:layout_constraintStart_toEndOf="@id/text_cart_list_name"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/button_cart_delete_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

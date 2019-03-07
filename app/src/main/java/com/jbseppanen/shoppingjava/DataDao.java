@@ -1,16 +1,15 @@
 package com.jbseppanen.shoppingjava;
 
 import android.os.Build;
-import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.jbseppanen.shoppingjava.product.Product;
 import com.jbseppanen.shoppingjava.supplier.Supplier;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DataDao {
 
@@ -49,6 +48,21 @@ public class DataDao {
         NetworkAdapter.httpRequest(getServerAddress("/suppliers"), NetworkAdapter.GET, null, callback);
     }
 
+    public static void addProductToCart(int shopperid, int productId, final ObjectCallback<JsonObject> objectCallback) {
+        final NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
+            @Override
+            public void returnResult(Boolean success, String page) {
+                Gson gson = new Gson();
+                Type type = new TypeToken<JsonObject>() {
+                }.getType();
+                JsonObject json = gson.fromJson(page, type);
+                objectCallback.returnObjects(json);
+            }
+        };
+        String url = getServerAddress("/shopper/" + shopperid + "/product/" + productId);
+        NetworkAdapter.httpRequest(url, NetworkAdapter.POST, null, callback);
+    }
+
     public static void addProductToSupplier(final ObjectCallback<Supplier> objectCallback, int supplierId, int productId) {
         final NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
             @Override
@@ -62,6 +76,21 @@ public class DataDao {
         };
         String url = getServerAddress("/supplier/" + supplierId + "/product/" + productId);
         NetworkAdapter.httpRequest(url, NetworkAdapter.POST, null, callback);
+    }
+
+    public static void getCart(int shopperid, final ObjectCallback<ArrayList<Product>> objectCallback) {
+        final NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
+            @Override
+            public void returnResult(Boolean success, String page) {
+                Gson gson = new Gson();
+                Type type = new TypeToken<ArrayList<Product>>() {
+                }.getType();
+                ArrayList<Product> products = gson.fromJson(page, type);
+                objectCallback.returnObjects(products);
+            }
+        };
+        String url = getServerAddress("/shopper/" + shopperid + "/cart");
+        NetworkAdapter.httpRequest(url, NetworkAdapter.GET, null, callback);
     }
 
 

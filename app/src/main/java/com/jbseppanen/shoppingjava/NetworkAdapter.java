@@ -58,6 +58,7 @@ public class NetworkAdapter {
                                 builder.append(line);
                             }
                             result = builder.toString();
+                            success = true;
                         }
                     }
 

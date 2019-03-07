@@ -2,6 +2,8 @@ package com.jbseppanen.shoppingjava;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,7 +13,10 @@ import com.jbseppanen.shoppingjava.supplier.SupplierListActivity;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String CURRENT_SHOPPER_ID_KEY = "CurrentShopperId";
+    public static final int CURRENT_SHOPPER_ID = 1;//TODO get this from user upon login, not hardcode.
     Context context;
+    public static SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(CURRENT_SHOPPER_ID_KEY, CURRENT_SHOPPER_ID);
+        editor.apply();
     }
-
 }

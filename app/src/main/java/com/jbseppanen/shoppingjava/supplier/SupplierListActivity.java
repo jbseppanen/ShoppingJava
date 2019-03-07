@@ -75,7 +75,7 @@ public class SupplierListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = findViewById(R.id.fab_product_add);
+        FloatingActionButton fab = findViewById(R.id.fab_supplier_add);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -197,7 +197,7 @@ public class SupplierListActivity extends AppCompatActivity {
 
             ViewHolder(View view) {
                 super(view);
-                mNameView = view.findViewById(R.id.name);
+                mNameView = view.findViewById(R.id.text_product_list_name);
                 status = new AtomicBoolean(false);
             }
         }

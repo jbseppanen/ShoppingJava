@@ -73,7 +73,7 @@ public class ProductDetailFragment extends Fragment {
             ((TextView) rootView.findViewById(R.id.product_description)).setText(mItem.getDescription());
             String price = "$" + mItem.price;
             ((TextView) rootView.findViewById(R.id.product_price)).setText(price);
-            ((TextView) rootView.findViewById(R.id.product_qty)).setText(String.valueOf(mItem.getQtyinstock()));
+            ((TextView) rootView.findViewById(R.id.product_qty)).setText(String.valueOf(mItem.getProductQty()));
 
             int imageId = context.getResources().getIdentifier(mItem.getProductname(), "drawable", context.getPackageName());
             if (imageId != 0) {

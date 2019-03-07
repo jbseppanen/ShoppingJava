@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +21,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.jbseppanen.shoppingjava.CartViewActivity;
 import com.jbseppanen.shoppingjava.DataDao;
+import com.jbseppanen.shoppingjava.MainActivity;
 import com.jbseppanen.shoppingjava.PublicFunctions;
 import com.jbseppanen.shoppingjava.R;
 import com.jbseppanen.shoppingjava.supplier.SupplierDetailActivity;
@@ -42,6 +43,7 @@ import static org.apache.commons.text.WordUtils.capitalizeFully;
  */
 public class ProductListActivity extends AppCompatActivity {
 
+    public static final String CART_VIEW_KEY = "Cart View Key";
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -51,6 +53,7 @@ public class ProductListActivity extends AppCompatActivity {
     static Context context;
     SimpleItemRecyclerViewAdapter listAdapter;
     private boolean supplierSelection;
+    private boolean cartView;
 
 
     @Override
@@ -75,11 +78,9 @@ public class ProductListActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_product_list);
 
-        if (getIntent().getStringExtra(SupplierDetailActivity.SUPPLIER_PRODUCT_SELECTION_KEY) == null) {
-            supplierSelection = false;
-        } else {
-            supplierSelection = true;
-        }
+        supplierSelection = getIntent().getStringExtra(SupplierDetailActivity.SUPPLIER_PRODUCT_SELECTION_KEY) != null;
+//        cartView = getIntent().getStringExtra(CART_VIEW_KEY) != null;
+//        int shopperId = MainActivity.sharedPref.getInt(MainActivity.CURRENT_SHOPPER_ID_KEY, -1);
 
         context = this;
 
@@ -87,21 +88,23 @@ public class ProductListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = findViewById(R.id.fab_product_add);
+        FloatingActionButton fab = findViewById(R.id.fab_product_add_new_item);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
             }
         });
 
         findViewById(R.id.fab_view_cart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(context, CartActivity.class);
-//
-//                startActivity(intent);
+/*                Intent intent = new Intent(context, ProductListActivity.class);
+                intent.putExtra(CART_VIEW_KEY, "view cart");
+                startActivity(intent);*/
+        Intent intent = new Intent(context, CartViewActivity.class);
+        startActivity(intent);
             }
         });
 
@@ -116,7 +119,7 @@ public class ProductListActivity extends AppCompatActivity {
         final View recyclerView = findViewById(R.id.product_list);
         assert recyclerView != null;
 
-        DataDao.getAllProducts(new DataDao.ObjectCallback<ArrayList<Product>>() {
+        final DataDao.ObjectCallback<ArrayList<Product>> callback = new DataDao.ObjectCallback<ArrayList<Product>>() {
             @Override
             public void returnObjects(ArrayList<Product> products) {
                 productList = products;
@@ -128,8 +131,13 @@ public class ProductListActivity extends AppCompatActivity {
                     }
                 });
             }
-        });
+        };
 
+//        if (cartView) {
+//            DataDao.getCart(shopperId, callback);
+//        } else {
+            DataDao.getAllProducts(callback);
+//        }
     }
 
 
@@ -234,9 +242,9 @@ public class ProductListActivity extends AppCompatActivity {
 
             ViewHolder(View view) {
                 super(view);
-                mIdView = view.findViewById(R.id.id_text);
-                mNameView = view.findViewById(R.id.name);
-                mImageView = view.findViewById(R.id.image);
+                mIdView = view.findViewById(R.id.id_text_product_qty);
+                mNameView = view.findViewById(R.id.text_product_list_name);
+                mImageView = view.findViewById(R.id.image_product_list);
                 status = new AtomicBoolean(false);
             }
         }
