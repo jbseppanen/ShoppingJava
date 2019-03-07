@@ -23,7 +23,6 @@ import android.widget.TextView;
 
 import com.jbseppanen.shoppingjava.CartViewActivity;
 import com.jbseppanen.shoppingjava.DataDao;
-import com.jbseppanen.shoppingjava.MainActivity;
 import com.jbseppanen.shoppingjava.PublicFunctions;
 import com.jbseppanen.shoppingjava.R;
 import com.jbseppanen.shoppingjava.supplier.SupplierDetailActivity;
@@ -43,7 +42,6 @@ import static org.apache.commons.text.WordUtils.capitalizeFully;
  */
 public class ProductListActivity extends AppCompatActivity {
 
-    public static final String CART_VIEW_KEY = "Cart View Key";
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -53,8 +51,6 @@ public class ProductListActivity extends AppCompatActivity {
     static Context context;
     SimpleItemRecyclerViewAdapter listAdapter;
     private boolean supplierSelection;
-    private boolean cartView;
-
 
     @Override
     public void onStart() {
@@ -79,8 +75,6 @@ public class ProductListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_product_list);
 
         supplierSelection = getIntent().getStringExtra(SupplierDetailActivity.SUPPLIER_PRODUCT_SELECTION_KEY) != null;
-//        cartView = getIntent().getStringExtra(CART_VIEW_KEY) != null;
-//        int shopperId = MainActivity.sharedPref.getInt(MainActivity.CURRENT_SHOPPER_ID_KEY, -1);
 
         context = this;
 
@@ -100,9 +94,6 @@ public class ProductListActivity extends AppCompatActivity {
         findViewById(R.id.fab_view_cart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-/*                Intent intent = new Intent(context, ProductListActivity.class);
-                intent.putExtra(CART_VIEW_KEY, "view cart");
-                startActivity(intent);*/
         Intent intent = new Intent(context, CartViewActivity.class);
         startActivity(intent);
             }
@@ -132,12 +123,7 @@ public class ProductListActivity extends AppCompatActivity {
                 });
             }
         };
-
-//        if (cartView) {
-//            DataDao.getCart(shopperId, callback);
-//        } else {
             DataDao.getAllProducts(callback);
-//        }
     }
 
 

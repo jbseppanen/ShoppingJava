@@ -6,15 +6,15 @@ public class Product {
     String description;
     String thumbImageUrl;
     double price;
-    private int productQty;
+    private int qtyinstock;
 
-    public Product(int productid, String productname, String description, String thumbImageUrl, double price, int productQty) {
+    public Product(int productid, String productname, String description, String thumbImageUrl, double price, int qtyinstock) {
         this.productid = productid;
         this.productname = productname;
         this.description = description;
         this.thumbImageUrl = thumbImageUrl;
         this.price = price;
-        this.productQty = productQty;
+        this.qtyinstock = qtyinstock;
     }
 
 /*
@@ -99,11 +99,11 @@ public class Product {
         this.price = price;
     }
 
-    public int getProductQty() {
-        return productQty;
+    public int getQtyinstock() {
+        return qtyinstock;
     }
 
-    public void setProductQty(int productQty) {
-        this.productQty = productQty;
+    public void setQtyinstock(int qtyinstock) {
+        this.qtyinstock = qtyinstock;
     }
 }

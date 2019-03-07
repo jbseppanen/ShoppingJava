@@ -29,14 +29,14 @@ public class CartViewActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-/*        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_order);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_order);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });*/
+        });
         context = this;
         int shopperId = MainActivity.sharedPref.getInt(MainActivity.CURRENT_SHOPPER_ID_KEY, -1);
 
@@ -47,14 +47,9 @@ public class CartViewActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-
                                 recyclerView = findViewById(R.id.cart_recycler_view);
-                                recyclerView.setHasFixedSize(true);
-
                                 layoutManager = new LinearLayoutManager(context, GridLayoutManager.VERTICAL, false);
                                 recyclerView.setLayoutManager(layoutManager);
-
-
                                 listAdapter = new CartListAdapter(products, context);
                                 recyclerView.setAdapter(listAdapter);
                             }

@@ -6,8 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jbseppanen.shoppingjava.product.Product;
 
@@ -21,6 +23,7 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.ViewHo
         TextView itemName;
         TextView itemQty;
         ImageView imageView;
+        ImageButton deleteButton;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -28,6 +31,7 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.ViewHo
             itemName = itemView.findViewById(R.id.text_cart_list_name);
             itemQty = itemView.findViewById(R.id.id_text_cart_qty);
             imageView = itemView.findViewById(R.id.image_cart_list);
+            deleteButton = itemView.findViewById(R.id.button_cart_delete_item);
         }
     }
 
@@ -58,11 +62,18 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.ViewHo
 
         String vanityName = capitalizeFully(product.getProductname().replace("_", " "));
         viewHolder.itemName.setText(vanityName);
-        viewHolder.itemQty.setText(String.valueOf(product.getProductQty()));
+        viewHolder.itemQty.setText(String.valueOf(product.getQtyinstock()));
         int imageId = context.getResources().getIdentifier(product.getProductname(), "drawable", context.getPackageName());
         if (imageId != 0) {
             viewHolder.imageView.setImageResource(imageId);
         }
+
+        viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "Function to delete not yet implemented", Toast.LENGTH_SHORT);
+            }
+        });
 
     }
 
