@@ -50,6 +50,6 @@
         android:visibility="visible"
         app:layout_anchor="@+id/product_detail_container"
         app:layout_anchorGravity="top|end"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@drawable/ic_add_shopping_cart" />
 
 </android.support.design.widget.CoordinatorLayout>
