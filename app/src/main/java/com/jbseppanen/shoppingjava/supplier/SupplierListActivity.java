@@ -1,5 +1,6 @@
 package com.jbseppanen.shoppingjava.supplier;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,11 +17,15 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jbseppanen.shoppingjava.DataDao;
 import com.jbseppanen.shoppingjava.PublicFunctions;
 import com.jbseppanen.shoppingjava.R;
+import com.jbseppanen.shoppingjava.product.Product;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,6 +50,7 @@ public class SupplierListActivity extends AppCompatActivity {
     public static ArrayList<Supplier> supplierList;
     static Context context;
     SimpleItemRecyclerViewAdapter listAdapter;
+    DataDao.ObjectCallback callback;
 
 
     @Override
@@ -79,8 +85,9 @@ public class SupplierListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Add new supplier", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                addNewSupplierDialog();
             }
         });
 
@@ -95,7 +102,7 @@ public class SupplierListActivity extends AppCompatActivity {
         final View recyclerView = findViewById(R.id.supplier_list);
         assert recyclerView != null;
 
-        DataDao.getAllSuppliers(new DataDao.ObjectCallback<ArrayList<Supplier>>() {
+        callback = new DataDao.ObjectCallback<ArrayList<Supplier>>() {
             @Override
             public void returnObjects(ArrayList<Supplier> suppliers) {
                 supplierList = suppliers;
@@ -107,7 +114,9 @@ public class SupplierListActivity extends AppCompatActivity {
                     }
                 });
             }
-        });
+        };
+
+        DataDao.getAllSuppliers(callback);
     }
 
 
@@ -201,5 +210,37 @@ public class SupplierListActivity extends AppCompatActivity {
                 status = new AtomicBoolean(false);
             }
         }
+
     }
+
+    private void addNewSupplierDialog() {
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.add_supplier_dialog);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCancelable(true);
+        final EditText supplierNameView = dialog.findViewById(R.id.edit_add_supplier_name);
+
+        dialog.findViewById(R.id.button_save_supplier).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Supplier supplier = new Supplier();
+                if (supplierNameView.getText().toString().equals("")) {
+                    Toast.makeText(context, "Name is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                supplier.setSuppliername(supplierNameView.getText().toString());
+                supplier.setAddress(((EditText) dialog.findViewById(R.id.edit_add_supplier_address)).getText().toString());
+                supplier.setCity(((EditText) dialog.findViewById(R.id.edit_add_supplier_city)).getText().toString());
+                supplier.setState(((EditText) dialog.findViewById(R.id.edit_add_supplier_state)).getText().toString());
+                supplier.setZipcode(((EditText) dialog.findViewById(R.id.edit_add_supplier_zipcode)).getText().toString());
+                supplier.setPhonenumber(((EditText) dialog.findViewById(R.id.edit_add_supplier_phone)).getText().toString());
+                DataDao.addNewSupplier(supplier);
+                DataDao.getAllSuppliers(callback);
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
 }

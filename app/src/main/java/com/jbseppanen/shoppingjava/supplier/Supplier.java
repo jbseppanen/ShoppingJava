@@ -9,6 +9,9 @@ public class Supplier {
     private String zipcode;
     private String phonenumber;
 
+    public Supplier() {
+    }
+
     public Supplier(int supplierid, String suppliername, String address, String city, String state, String zipcode, String phonenumber) {
         this.supplierid = supplierid;
         this.suppliername = suppliername;

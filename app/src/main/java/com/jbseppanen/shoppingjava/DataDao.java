@@ -113,13 +113,26 @@ public class DataDao {
         NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
             @Override
             public void returnResult(Boolean success, String result) {
-                //Nothing to return.
+                //Nothing to accept a return yet.
             }
         };
         Gson gson = new Gson();
         String jsonString = gson.toJson(product);
         String url = getServerAddress("/product");
-       NetworkAdapter.httpRequest(url, NetworkAdapter.POST, jsonString, callback);
+        NetworkAdapter.httpRequest(url, NetworkAdapter.POST, jsonString, callback);
+    }
+
+    public static void addNewSupplier(Supplier supplier) {
+        NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
+            @Override
+            public void returnResult(Boolean success, String result) {
+                //Nothing to accept a return yet.
+            }
+        };
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(supplier);
+        String url = getServerAddress("/supplier");
+        NetworkAdapter.httpRequest(url, NetworkAdapter.POST, jsonString, callback);
     }
 
 
