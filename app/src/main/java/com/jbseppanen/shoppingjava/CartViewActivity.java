@@ -33,7 +33,7 @@ public class CartViewActivity extends AppCompatActivity {
 
         context = this;
 
-        final int shopperId = MainActivity.sharedPref.getInt(MainActivity.CURRENT_SHOPPER_ID_KEY, -1);
+        final long shopperId = MainActivity.sharedPref.getLong(MainActivity.CURRENT_SHOPPER_ID_KEY, -1);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_order);
         fab.setOnClickListener(new View.OnClickListener() {

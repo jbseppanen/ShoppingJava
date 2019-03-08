@@ -5,10 +5,14 @@ import android.os.Build;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.jbseppanen.shoppingjava.product.Product;
+import com.jbseppanen.shoppingjava.shopper.Shopper;
 import com.jbseppanen.shoppingjava.supplier.Supplier;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -49,14 +53,19 @@ public class DataDao {
         NetworkAdapter.httpRequest(getServerAddress("/suppliers"), NetworkAdapter.GET, null, callback);
     }
 
-    public static void addProductToCart(int shopperid, int productId, final ObjectCallback<JsonObject> objectCallback) {
+    public static void addProductToCart(long shopperid, int productId, final ObjectCallback<JsonObject> objectCallback) {
         final NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
             @Override
             public void returnResult(Boolean success, String page) {
                 Gson gson = new Gson();
                 Type type = new TypeToken<JsonObject>() {
                 }.getType();
-                JsonObject json = gson.fromJson(page, type);
+                JsonObject json;
+                try {
+                    json = gson.fromJson(page, type);
+                } catch (JsonSyntaxException e) {
+                 json = null;
+                }
                 objectCallback.returnObjects(json);
             }
         };
@@ -79,7 +88,7 @@ public class DataDao {
         NetworkAdapter.httpRequest(url, NetworkAdapter.POST, null, callback);
     }
 
-    public static void getCart(int shopperid, final ObjectCallback<ArrayList<Product>> objectCallback) {
+    public static void getCart(long shopperid, final ObjectCallback<ArrayList<Product>> objectCallback) {
         final NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
             @Override
             public void returnResult(Boolean success, String page) {
@@ -94,7 +103,7 @@ public class DataDao {
         NetworkAdapter.httpRequest(url, NetworkAdapter.GET, null, callback);
     }
 
-    public static void orderCart(int shopperid, final ObjectCallback<JsonObject> objectCallback) {
+    public static void orderCart(long shopperid, final ObjectCallback<JsonObject> objectCallback) {
         final NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
             @Override
             public void returnResult(Boolean success, String page) {
@@ -135,6 +144,27 @@ public class DataDao {
         NetworkAdapter.httpRequest(url, NetworkAdapter.POST, jsonString, callback);
     }
 
+    public static void createShopperAccount(final Shopper shopper, final ObjectCallback<Long> objectCallback) {
+        NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
+            @Override
+            public void returnResult(Boolean success, String result) {
+                long shopperid = -1;
+                Gson gson = new Gson();
+                Type type = new TypeToken<Shopper>() {
+                }.getType();
+                try {
+                    Shopper returnedShopper = gson.fromJson(result, type);
+                    shopperid = returnedShopper.getShopperid();
+                } catch (JsonParseException e) {
+                }
+                objectCallback.returnObjects(shopperid);
+            }
+        };
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(shopper);
+        String url = getServerAddress("/shopper");
+        NetworkAdapter.httpRequest(url, NetworkAdapter.POST, jsonString, callback);
+    }
 
     private static String getServerAddress(String suffix) {
         if (Build.FINGERPRINT.startsWith("generic")

@@ -22,4 +22,13 @@
         android:text="View Suppliers"
         app:layout_constraintTop_toBottomOf="@id/button_shop"
         />
+
+    <Button
+        android:id="@+id/button_create_shopper"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Account"
+        app:layout_constraintTop_toBottomOf="@id/button_suppliers"
+        />
 </android.support.constraint.ConstraintLayout>
