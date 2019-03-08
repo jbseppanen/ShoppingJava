@@ -2,11 +2,13 @@ package com.jbseppanen.shoppingjava.product;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -18,8 +20,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jbseppanen.shoppingjava.CartViewActivity;
 import com.jbseppanen.shoppingjava.DataDao;
@@ -51,6 +56,7 @@ public class ProductListActivity extends AppCompatActivity {
     static Context context;
     SimpleItemRecyclerViewAdapter listAdapter;
     private boolean supplierSelection;
+    DataDao.ObjectCallback callback;
 
     @Override
     public void onStart() {
@@ -86,16 +92,18 @@ public class ProductListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
+                Snackbar.make(view, "Add new product", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                addNewProductDialog();
+
             }
         });
 
         findViewById(R.id.fab_view_cart).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-        Intent intent = new Intent(context, CartViewActivity.class);
-        startActivity(intent);
+                Intent intent = new Intent(context, CartViewActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -107,10 +115,10 @@ public class ProductListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        final View recyclerView = findViewById(R.id.product_list);
+        final RecyclerView recyclerView = findViewById(R.id.product_list);
         assert recyclerView != null;
 
-        final DataDao.ObjectCallback<ArrayList<Product>> callback = new DataDao.ObjectCallback<ArrayList<Product>>() {
+        callback = new DataDao.ObjectCallback<ArrayList<Product>>() {
             @Override
             public void returnObjects(ArrayList<Product> products) {
                 productList = products;
@@ -123,7 +131,7 @@ public class ProductListActivity extends AppCompatActivity {
                 });
             }
         };
-            DataDao.getAllProducts(callback);
+        DataDao.getAllProducts(callback);
     }
 
 
@@ -152,7 +160,6 @@ public class ProductListActivity extends AppCompatActivity {
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.product_list_content, parent, false);
-            boolean test = false;
             return new ViewHolder(view);
         }
 
@@ -163,11 +170,14 @@ public class ProductListActivity extends AppCompatActivity {
             int imageId = context.getResources().getIdentifier(mValues.get(position).getProductname(), "drawable", context.getPackageName());
             if (imageId != 0) {
                 holder.mImageView.setImageResource(imageId);
+            } else {
+                holder.mImageView.setImageDrawable(null);
             }
 
             String vanityName = capitalizeFully(mValues.get(position).productname.replace("_", " "));
             holder.mNameView.setText(vanityName);
-            holder.mIdView.setText(String.valueOf(mValues.get(position).productid));
+            String inStock = "Qty in stock:" + mValues.get(position).getQtyinstock();
+            holder.mIdView.setText(inStock);
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -182,7 +192,7 @@ public class ProductListActivity extends AppCompatActivity {
                     } else {
                         if (mTwoPane) {
                             Bundle arguments = new Bundle();
-                            arguments.putInt(ProductDetailFragment.ARG_ITEM_ID, product.productid - 1);
+                            arguments.putInt(ProductDetailFragment.ARG_ITEM_ID, holder.getAdapterPosition());
                             ProductDetailFragment fragment = new ProductDetailFragment();
                             fragment.setArguments(arguments);
                             mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -191,7 +201,7 @@ public class ProductListActivity extends AppCompatActivity {
                         } else {
                             Context context = v.getContext();
                             Intent intent = new Intent(context, ProductDetailActivity.class);
-                            intent.putExtra(ProductDetailFragment.ARG_ITEM_ID, product.productid - 1);
+                            intent.putExtra(ProductDetailFragment.ARG_ITEM_ID, holder.getAdapterPosition());
                             final ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation((Activity) context, holder.mImageView, ViewCompat.getTransitionName(holder.mImageView));
                             context.startActivity(intent, activityOptions.toBundle());
                         }
@@ -235,4 +245,38 @@ public class ProductListActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void addNewProductDialog() {
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.add_product_dialog);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCancelable(true);
+        final EditText productNameView = dialog.findViewById(R.id.edit_add_product_name);
+        final EditText productDescView = dialog.findViewById(R.id.edit_add_product_description);
+        final EditText productQtyView = dialog.findViewById(R.id.edit_add_product_qty);
+        final EditText productPriceView = dialog.findViewById(R.id.edit_add_product_price);
+        Button saveButton = dialog.findViewById(R.id.button_save_product);
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Product product = new Product();
+                if (productNameView.getText().toString().equals("")) {
+                    Toast.makeText(context, "Name is required.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                product.setProductname(productNameView.getText().toString());
+                product.setDescription(productDescView.getText().toString());
+                product.setQtyinstock(Integer.parseInt(productQtyView.getText().toString()));
+                product.setPrice(Double.parseDouble(productPriceView.getText().toString()));
+                DataDao.addNewProduct(product);
+                DataDao.getAllProducts(callback);
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+
 }

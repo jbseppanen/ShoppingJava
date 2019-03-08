@@ -3,6 +3,7 @@ package com.jbseppanen.shoppingjava;
 import android.os.Build;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.jbseppanen.shoppingjava.product.Product;
@@ -91,6 +92,34 @@ public class DataDao {
         };
         String url = getServerAddress("/shopper/" + shopperid + "/cart");
         NetworkAdapter.httpRequest(url, NetworkAdapter.GET, null, callback);
+    }
+
+    public static void orderCart(int shopperid, final ObjectCallback<JsonObject> objectCallback) {
+        final NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
+            @Override
+            public void returnResult(Boolean success, String page) {
+                Gson gson = new Gson();
+                Type type = new TypeToken<JsonObject>() {
+                }.getType();
+                JsonObject json = gson.fromJson(page, type);
+                objectCallback.returnObjects(json);
+            }
+        };
+        String url = getServerAddress("/shopper/" + shopperid + "/order");
+        NetworkAdapter.httpRequest(url, NetworkAdapter.POST, null, callback);
+    }
+
+    public static void addNewProduct(Product product) {
+        NetworkAdapter.NetworkCallback callback = new NetworkAdapter.NetworkCallback() {
+            @Override
+            public void returnResult(Boolean success, String result) {
+                //Nothing to return.
+            }
+        };
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(product);
+        String url = getServerAddress("/product");
+       NetworkAdapter.httpRequest(url, NetworkAdapter.POST, jsonString, callback);
     }
 
 

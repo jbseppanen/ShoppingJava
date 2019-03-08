@@ -8,6 +8,9 @@ public class Product {
     double price;
     private int qtyinstock;
 
+    public Product() {
+    }
+
     public Product(int productid, String productname, String description, String thumbImageUrl, double price, int qtyinstock) {
         this.productid = productid;
         this.productname = productname;

@@ -45,13 +45,13 @@ public class ProductDetailFragment extends Fragment {
     }
 
     Context context;
-    AtomicBoolean cancelStatus;
+//    AtomicBoolean cancelStatus;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this.getActivity();
-        cancelStatus = new AtomicBoolean(false);
+//        cancelStatus = new AtomicBoolean(false);
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItem = ProductListActivity.productList.get(getArguments().getInt(ARG_ITEM_ID));
             Activity activity = this.getActivity();
@@ -68,7 +68,7 @@ public class ProductDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.product_detail, container, false);
-        cancelStatus = new AtomicBoolean(false);
+//        cancelStatus = new AtomicBoolean(false);
         if (mItem != null) {
             ((TextView) rootView.findViewById(R.id.product_description)).setText(mItem.getDescription());
             String price = "$" + mItem.price;
@@ -94,6 +94,6 @@ public class ProductDetailFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        cancelStatus.set(true);
+//        cancelStatus.set(true);
     }
 }

@@ -23,7 +23,7 @@ public class NetworkAdapter {
         void returnResult(Boolean success, String result);
     }
 
-    public static void httpRequest(final String stringUrl, final String requestType, final JSONObject body, final NetworkCallback callback) {
+    public static void httpRequest(final String stringUrl, final String requestType, final String jsonBody, final NetworkCallback callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -37,13 +37,14 @@ public class NetworkAdapter {
                     connection.setReadTimeout(TIMEOUT);
                     connection.setConnectTimeout(TIMEOUT);
                     connection.setRequestMethod(requestType);
+                    connection.setRequestProperty("Content-Type", "application/json");
 
                     if (requestType.equals(GET) || requestType.equals(DELETE)) {
                         connection.connect();
                     } else if (requestType.equals(POST) || requestType.equals(PUT)) {
-                        if (body != null) {
+                        if (jsonBody != null) {
                             OutputStream outputStream = connection.getOutputStream();
-                            outputStream.write(body.toString().getBytes());
+                            outputStream.write(jsonBody.getBytes());
                             outputStream.close();
                         }
                     }

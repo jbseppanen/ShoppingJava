@@ -35,7 +35,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         context = this;
-        final int shopperid = MainActivity.sharedPref.getInt(MainActivity.CURRENT_SHOPPER_ID_KEY,-1);
+        final int shopperid = MainActivity.sharedPref.getInt(MainActivity.CURRENT_SHOPPER_ID_KEY, -1);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_product_add_to_cart);
         fab.setOnClickListener(new View.OnClickListener() {

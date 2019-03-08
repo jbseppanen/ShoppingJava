@@ -71,7 +71,7 @@ public class CartListAdapter extends RecyclerView.Adapter<CartListAdapter.ViewHo
         viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "Function to delete not yet implemented", Toast.LENGTH_SHORT);
+                Toast.makeText(context, "Function to delete not yet implemented", Toast.LENGTH_SHORT).show();
             }
         });
 
